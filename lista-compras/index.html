@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lista de Compras</title>
+<meta name="description" content="App de lista de compras com categorias, preços, carrinho e histórico.">
+<meta name="theme-color" content="#1f8a5f">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  :root{
+    --green:#1f8a5f; --green-dark:#166b49; --green-light:#e6f4ee;
+    --bg:#f4f6f5; --surface:#ffffff; --text:#1b1f1d; --text-dim:#5c655f;
+    --border:#e1e6e3; --danger:#c0392b; --radius:10px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);
+    -webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+  h1,h2,h3{margin:0;font-weight:600}
+  button{font-family:inherit;cursor:pointer}
+  input,select{font-family:inherit}
+  .hidden{display:none !important}
+
+  header.topbar{position:sticky;top:0;z-index:10;background:var(--green);color:#fff;
+    padding:calc(env(safe-area-inset-top) + 14px) 16px 14px;display:flex;align-items:center;gap:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  header.topbar .back{background:none;border:0;color:#fff;font-size:22px;padding:0 4px;line-height:1}
+  header.topbar h1{font-size:19px;flex:1}
+  header.topbar .icon-btn{background:none;border:0;color:#fff;font-size:20px;padding:4px 6px}
+
+  main{max-width:520px;margin:0 auto;padding:14px 14px 100px}
+
+  /* Home: lista de listas */
+  .lists-grid{display:flex;flex-direction:column;gap:10px}
+  .list-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px;display:flex;align-items:center;gap:12px}
+  .list-card .info{flex:1;min-width:0}
+  .list-card .info .name{font-weight:600;font-size:16px}
+  .list-card .info .meta{font-size:13px;color:var(--text-dim);margin-top:2px}
+  .list-card .go{color:var(--green);font-size:20px;background:none;border:0}
+  .list-card .del{color:var(--text-dim);font-size:13px;background:none;border:0;padding:6px}
+  .empty-state{text-align:center;color:var(--text-dim);padding:48px 16px}
+  .empty-state .big{font-size:40px;margin-bottom:10px}
+
+  .fab{position:fixed;right:20px;bottom:calc(env(safe-area-inset-bottom) + 20px);width:56px;height:56px;
+    border-radius:50%;background:var(--green);color:#fff;border:0;font-size:28px;
+    box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;z-index:20}
+  .fab:active{background:var(--green-dark)}
+
+  /* List detail */
+  .add-item-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:12px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
+  .add-item-row{display:flex;gap:8px}
+  .add-item-row input, .add-item-row select{border:1px solid var(--border);border-radius:8px;
+    padding:9px 10px;font-size:14px;background:#fff;color:var(--text)}
+  .add-item-row input[name=name]{flex:2;min-width:0}
+  .add-item-row input[name=qty]{width:56px}
+  .add-item-row select[name=unit]{width:64px}
+  .add-item-row input[name=price]{width:84px}
+  .add-item-row select[name=category]{flex:1}
+  .add-item-bar .add-btn{align-self:flex-end;background:var(--green);color:#fff;border:0;
+    border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600}
+
+  .category-group{margin-bottom:16px}
+  .category-title{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-dim);
+    margin:0 0 8px 4px}
+  .item-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:11px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .item-row.checked .name{text-decoration:line-through;color:var(--text-dim)}
+  .item-row .check{width:24px;height:24px;flex-shrink:0;border-radius:6px;border:2px solid var(--border);
+    background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff}
+  .item-row.checked .check{background:var(--green);border-color:var(--green)}
+  .item-row .info{flex:1;min-width:0}
+  .item-row .name{font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item-row .sub{font-size:12.5px;color:var(--text-dim);margin-top:2px}
+  .item-row .del{background:none;border:0;color:var(--text-dim);font-size:18px;padding:4px}
+
+  .summary-bar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);
+    padding:10px 14px calc(env(safe-area-inset-bottom) + 10px);display:flex;justify-content:space-between;
+    align-items:center;gap:10px;margin:0 -14px}
+  .summary-bar .stat{text-align:left}
+  .summary-bar .stat .label{font-size:11px;color:var(--text-dim)}
+  .summary-bar .stat .value{font-size:16px;font-weight:700}
+  .summary-bar .finish-btn{background:var(--green);color:#fff;border:0;border-radius:8px;
+    padding:11px 16px;font-size:14px;font-weight:600;white-space:nowrap}
+  .summary-bar .finish-btn:disabled{background:var(--border);color:var(--text-dim)}
+
+  /* History */
+  .history-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px;margin-bottom:10px}
+  .history-card .row{display:flex;justify-content:space-between;align-items:baseline}
+  .history-card .title{font-weight:600}
+  .history-card .date{font-size:12.5px;color:var(--text-dim)}
+  .history-card .total{color:var(--green);font-weight:700}
+  .history-card .items-list{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);
+    font-size:13.5px;color:var(--text-dim)}
+  .history-card .items-list div{padding:2px 0}
+
+  .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border);
+    display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:15}
+  .bottom-nav button{flex:1;background:none;border:0;padding:10px 4px 8px;font-size:11px;color:var(--text-dim);
+    display:flex;flex-direction:column;align-items:center;gap:3px}
+  .bottom-nav button .ic{font-size:19px}
+  .bottom-nav button.active{color:var(--green)}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;
+    justify-content:center;z-index:30}
+  .modal{background:var(--surface);width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom) + 18px)}
+  .modal h3{margin-bottom:14px}
+  .modal input{width:100%;border:1px solid var(--border);border-radius:8px;padding:11px;font-size:15px;margin-bottom:14px}
+  .modal .actions{display:flex;gap:10px}
+  .modal .actions button{flex:1;padding:11px;border-radius:8px;border:0;font-size:14px;font-weight:600}
+  .modal .cancel{background:var(--bg);color:var(--text)}
+  .modal .confirm{background:var(--green);color:#fff}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1b1f1d;color:#fff;
+    padding:10px 18px;border-radius:20px;font-size:13.5px;z-index:40;opacity:0;transition:opacity .25s}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="back hidden" id="btnBack" aria-label="Voltar">&#8592;</button>
+  <h1 id="pageTitle">Minhas Listas</h1>
+  <button class="icon-btn hidden" id="btnRename" aria-label="Renomear lista">&#9998;</button>
+</header>
+
+<main>
+  <!-- TELA: HOME (listas) -->
+  <section id="screenHome">
+    <div id="listsContainer" class="lists-grid"></div>
+    <div id="emptyLists" class="empty-state hidden">
+      <div class="big">🛒</div>
+      <div>Você ainda não tem nenhuma lista.<br>Toque no + para criar a primeira.</div>
+    </div>
+  </section>
+
+  <!-- TELA: DETALHE DA LISTA -->
+  <section id="screenList" class="hidden">
+    <div class="add-item-bar">
+      <div class="add-item-row">
+        <input type="text" name="name" placeholder="Nome do item" autocomplete="off">
+      </div>
+      <div class="add-item-row">
+        <input type="number" name="qty" placeholder="Qtd" value="1" min="0" step="1">
+        <select name="unit">
+          <option>un</option><option>kg</option><option>g</option><option>L</option><option>ml</option><option>pct</option><option>cx</option>
+        </select>
+        <input type="text" name="price" placeholder="Preço R$" inputmode="decimal">
+        <select name="category"></select>
+      </div>
+      <button class="add-btn" id="btnAddItem">Adicionar item</button>
+    </div>
+
+    <div id="itemsContainer"></div>
+    <div id="emptyItems" class="empty-state hidden">
+      <div class="big">📝</div>
+      <div>Lista vazia. Adicione o primeiro item acima.</div>
+    </div>
+  </section>
+
+  <!-- TELA: HISTÓRICO -->
+  <section id="screenHistory" class="hidden">
+    <div id="historyContainer"></div>
+    <div id="emptyHistory" class="empty-state hidden">
+      <div class="big">📜</div>
+      <div>Nenhuma compra finalizada ainda.</div>
+    </div>
+  </section>
+</main>
+
+<div id="summaryBar" class="summary-bar hidden">
+  <div class="stat">
+    <div class="label">Total (<span id="totalCount">0</span>)</div>
+    <div class="value" id="totalValue">R$ 0,00</div>
+  </div>
+  <div class="stat">
+    <div class="label">Carrinho (<span id="cartCount">0</span>)</div>
+    <div class="value" id="cartValue">R$ 0,00</div>
+  </div>
+  <button class="finish-btn" id="btnFinish">Finalizar compra</button>
+</div>
+
+<nav class="bottom-nav" id="bottomNav">
+  <button data-tab="home" class="active"><span class="ic">🛒</span>Listas</button>
+  <button data-tab="history"><span class="ic">📜</span>Histórico</button>
+</nav>
+
+<div id="modalRoot"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ---------- estado / persistência ---------- */
+const STORAGE_KEY = 'listaCompras.v1';
+const CATEGORIES = ['Sem categoria','Frutas, ovos e verduras','Carnes','Frios, Leites e Derivados',
+  'Padaria e Sobremesas','Mercearia','Bebidas','Bazar e limpeza','Higiene Pessoal','Saúde e Beleza',
+  'Comidas Prontas e Congelados','Importados'];
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.error('Falha ao ler dados salvos', e); }
+  return { lists: [], history: [] };
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+let state = loadState();
+let currentListId = null;
+let currentTab = 'home';
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function money(v){ return (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function parsePrice(v){
+  if(!v) return 0;
+  const n = parseFloat(String(v).replace(',', '.'));
+  return isNaN(n) ? 0 : n;
+}
+function getList(id){ return state.lists.find(l => l.id === id); }
+
+/* ---------- toast ---------- */
+let toastTimer;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+
+/* ---------- modal genérico de texto ---------- */
+function promptModal({title, placeholder, initial='', onConfirm}){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="mOverlay">
+      <div class="modal">
+        <h3>${title}</h3>
+        <input id="mInput" type="text" placeholder="${placeholder}" value="${initial.replace(/"/g,'&quot;')}">
+        <div class="actions">
+          <button class="cancel" id="mCancel">Cancelar</button>
+          <button class="confirm" id="mConfirm">Salvar</button>
+        </div>
+      </div>
+    </div>`;
+  const overlay = document.getElementById('mOverlay');
+  const input = document.getElementById('mInput');
+  input.focus();
+  input.select();
+  const close = () => { root.innerHTML = ''; };
+  overlay.addEventListener('click', e => { if(e.target === overlay) close(); });
+  document.getElementById('mCancel').onclick = close;
+  document.getElementById('mConfirm').onclick = () => {
+    const val = input.value.trim();
+    if(val){ onConfirm(val); }
+    close();
+  };
+  input.addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('mConfirm').click(); });
+}
+
+function confirmModal({title, message, confirmLabel='Excluir', confirmColor='var(--danger)', onConfirm}){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="cOverlay">
+      <div class="modal">
+        <h3>${title}</h3>
+        <p style="color:var(--text-dim);margin:0 0 16px">${message}</p>
+        <div class="actions">
+          <button class="cancel" id="cCancel">Cancelar</button>
+          <button class="confirm" id="cConfirm" style="background:${confirmColor}">${confirmLabel}</button>
+        </div>
+      </div>
+    </div>`;
+  const overlay = document.getElementById('cOverlay');
+  const close = () => { root.innerHTML = ''; };
+  overlay.addEventListener('click', e => { if(e.target === overlay) close(); });
+  document.getElementById('cCancel').onclick = close;
+  document.getElementById('cConfirm').onclick = () => { onConfirm(); close(); };
+}
+
+/* ---------- navegação ---------- */
+function showScreen(name){
+  document.getElementById('screenHome').classList.toggle('hidden', name !== 'home');
+  document.getElementById('screenList').classList.toggle('hidden', name !== 'list');
+  document.getElementById('screenHistory').classList.toggle('hidden', name !== 'history');
+  document.getElementById('summaryBar').classList.toggle('hidden', name !== 'list');
+  document.getElementById('bottomNav').classList.toggle('hidden', name === 'list');
+  document.getElementById('btnBack').classList.toggle('hidden', name !== 'list');
+  document.getElementById('btnRename').classList.toggle('hidden', name !== 'list');
+  document.getElementById('fabAdd').classList.toggle('hidden', name !== 'home');
+
+  const title = document.getElementById('pageTitle');
+  if(name === 'home') title.textContent = 'Minhas Listas';
+  else if(name === 'history') title.textContent = 'Histórico de Compras';
+  else if(name === 'list') title.textContent = getList(currentListId)?.name || 'Lista';
+}
+
+document.getElementById('btnBack').onclick = () => { currentListId = null; renderHome(); showScreen('home'); currentTab='home'; updateNavActive(); };
+document.getElementById('btnRename').onclick = () => {
+  const list = getList(currentListId);
+  if(!list) return;
+  promptModal({ title:'Renomear lista', placeholder:'Nome da lista', initial:list.name,
+    onConfirm:(val)=>{ list.name = val; saveState(); showScreen('list'); renderHome(); } });
+};
+
+function updateNavActive(){
+  document.querySelectorAll('#bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.tab === currentTab));
+}
+document.querySelectorAll('#bottomNav button').forEach(btn => {
+  btn.onclick = () => {
+    currentTab = btn.dataset.tab;
+    updateNavActive();
+    if(currentTab === 'home'){ renderHome(); showScreen('home'); }
+    else { renderHistory(); showScreen('history'); }
+  };
+});
+
+/* ---------- HOME: listas ---------- */
+function renderHome(){
+  const container = document.getElementById('listsContainer');
+  const empty = document.getElementById('emptyLists');
+  container.innerHTML = '';
+  if(state.lists.length === 0){
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  state.lists.slice().reverse().forEach(list => {
+    const total = list.items.length;
+    const checked = list.items.filter(i => i.inCart).length;
+    const card = document.createElement('div');
+    card.className = 'list-card';
+    card.innerHTML = `
+      <div class="info">
+        <div class="name"></div>
+        <div class="meta">${checked}/${total} itens no carrinho</div>
+      </div>
+      <button class="del" title="Excluir lista">🗑</button>
+      <button class="go">›</button>`;
+    card.querySelector('.name').textContent = list.name;
+    card.querySelector('.go').onclick = () => openList(list.id);
+    card.querySelector('.info').onclick = () => openList(list.id);
+    card.querySelector('.del').onclick = (e) => {
+      e.stopPropagation();
+      confirmModal({ title:'Excluir lista', message:`Excluir "${list.name}" e todos os seus itens?`,
+        onConfirm:()=>{ state.lists = state.lists.filter(l => l.id !== list.id); saveState(); renderHome(); } });
+    };
+    container.appendChild(card);
+  });
+}
+
+const fab = document.createElement('button');
+fab.className = 'fab hidden';
+fab.id = 'fabAdd';
+fab.textContent = '+';
+document.body.appendChild(fab);
+fab.onclick = () => {
+  promptModal({ title:'Nova lista', placeholder:'Ex: Mercado do mês',
+    onConfirm:(name)=>{
+      const list = { id: uid(), name, items: [], createdAt: Date.now() };
+      state.lists.push(list);
+      saveState();
+      openList(list.id);
+    }});
+};
+
+/* ---------- DETALHE DA LISTA ---------- */
+function openList(id){
+  currentListId = id;
+  populateCategorySelect();
+  renderItems();
+  showScreen('list');
+}
+
+function populateCategorySelect(){
+  const sel = document.querySelector('select[name=category]');
+  sel.innerHTML = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+document.getElementById('btnAddItem').onclick = () => {
+  const list = getList(currentListId);
+  if(!list) return;
+  const nameInput = document.querySelector('input[name=name]');
+  const qtyInput = document.querySelector('input[name=qty]');
+  const unitInput = document.querySelector('select[name=unit]');
+  const priceInput = document.querySelector('input[name=price]');
+  const catInput = document.querySelector('select[name=category]');
+
+  const name = nameInput.value.trim();
+  if(!name){ showToast('Digite o nome do item'); nameInput.focus(); return; }
+
+  list.items.push({
+    id: uid(),
+    name,
+    qty: parseFloat(qtyInput.value) || 1,
+    unit: unitInput.value,
+    price: parsePrice(priceInput.value),
+    category: catInput.value,
+    inCart: false
+  });
+  saveState();
+  nameInput.value = ''; qtyInput.value = '1'; priceInput.value = '';
+  nameInput.focus();
+  renderItems();
+};
+document.querySelector('input[name=name]').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('btnAddItem').click();
+});
+
+function renderItems(){
+  const list = getList(currentListId);
+  if(!list) return;
+  const container = document.getElementById('itemsContainer');
+  const empty = document.getElementById('emptyItems');
+  container.innerHTML = '';
+
+  if(list.items.length === 0){
+    empty.classList.remove('hidden');
+  } else {
+    empty.classList.add('hidden');
+    const byCategory = {};
+    list.items.forEach(item => {
+      const cat = item.category || 'Sem categoria';
+      (byCategory[cat] = byCategory[cat] || []).push(item);
+    });
+    Object.keys(byCategory).sort().forEach(cat => {
+      const group = document.createElement('div');
+      group.className = 'category-group';
+      group.innerHTML = `<div class="category-title">${cat}</div>`;
+      byCategory[cat].forEach(item => group.appendChild(renderItemRow(list, item)));
+      container.appendChild(group);
+    });
+  }
+  updateSummary(list);
+}
+
+function renderItemRow(list, item){
+  const row = document.createElement('div');
+  row.className = 'item-row' + (item.inCart ? ' checked' : '');
+  const subtotal = item.qty * item.price;
+  row.innerHTML = `
+    <button class="check">${item.inCart ? '✓' : ''}</button>
+    <div class="info">
+      <div class="name"></div>
+      <div class="sub">${item.qty} ${item.unit}${item.price ? ' · ' + money(subtotal) : ''}</div>
+    </div>
+    <button class="del">✕</button>`;
+  row.querySelector('.name').textContent = item.name;
+  row.querySelector('.check').onclick = () => { item.inCart = !item.inCart; saveState(); renderItems(); };
+  row.querySelector('.info').onclick = () => { item.inCart = !item.inCart; saveState(); renderItems(); };
+  row.querySelector('.del').onclick = () => {
+    list.items = list.items.filter(i => i.id !== item.id);
+    saveState();
+    renderItems();
+  };
+  return row;
+}
+
+function updateSummary(list){
+  const total = list.items.reduce((s,i)=> s + i.qty * i.price, 0);
+  const cartItems = list.items.filter(i => i.inCart);
+  const cartTotal = cartItems.reduce((s,i)=> s + i.qty * i.price, 0);
+  document.getElementById('totalCount').textContent = list.items.length;
+  document.getElementById('totalValue').textContent = money(total);
+  document.getElementById('cartCount').textContent = cartItems.length;
+  document.getElementById('cartValue').textContent = money(cartTotal);
+  const btn = document.getElementById('btnFinish');
+  btn.disabled = cartItems.length === 0;
+}
+
+document.getElementById('btnFinish').onclick = () => {
+  const list = getList(currentListId);
+  if(!list) return;
+  const cartItems = list.items.filter(i => i.inCart);
+  if(cartItems.length === 0) return;
+  const total = cartItems.reduce((s,i)=> s + i.qty * i.price, 0);
+  confirmModal({
+    title:'Finalizar compra',
+    message:`Salvar ${cartItems.length} ite${cartItems.length>1?'ns':'m'} do carrinho no histórico (${money(total)}) e desmarcar a lista?`,
+    confirmLabel:'Finalizar',
+    onConfirm:()=>{
+      state.history.push({
+        id: uid(),
+        listName: list.name,
+        completedAt: Date.now(),
+        items: cartItems.map(i => ({ name:i.name, qty:i.qty, unit:i.unit, price:i.price })),
+        total
+      });
+      list.items.forEach(i => { if(i.inCart) i.inCart = false; });
+      saveState();
+      renderItems();
+      showToast('Compra salva no histórico!');
+    },
+    confirmColor: 'var(--green)'
+  });
+};
+
+/* ---------- HISTÓRICO ---------- */
+function renderHistory(){
+  const container = document.getElementById('historyContainer');
+  const empty = document.getElementById('emptyHistory');
+  container.innerHTML = '';
+  if(state.history.length === 0){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  state.history.slice().reverse().forEach(h => {
+    const date = new Date(h.completedAt).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.innerHTML = `
+      <div class="row">
+        <div class="title"></div>
+        <div class="total">${money(h.total)}</div>
+      </div>
+      <div class="date">${date} · ${h.items.length} ite${h.items.length>1?'ns':'m'}</div>
+      <div class="items-list hidden"></div>`;
+    card.querySelector('.title').textContent = h.listName;
+    const itemsList = card.querySelector('.items-list');
+    itemsList.innerHTML = h.items.map(i => `<div>${i.qty} ${i.unit} — ${i.name} ${i.price ? '(' + money(i.qty*i.price) + ')' : ''}</div>`).join('');
+    card.addEventListener('click', () => itemsList.classList.toggle('hidden'));
+    container.appendChild(card);
+  });
+}
+
+/* ---------- service worker ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.error('SW falhou', err));
+  });
+}
+
+/* ---------- start ---------- */
+renderHome();
+showScreen('home');
+</script>
+</body>
+</html>
