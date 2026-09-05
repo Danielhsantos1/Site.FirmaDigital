@@ -1,4 +1,4 @@
-# Agendamento Online — Manicure & Pedicure (com sinal via PIX)
+# Unha Marcada — Agendamento Online para Manicure & Pedicure (com sinal via PIX)
 
 Plataforma de agendamento **multi-tenant** (vários salões na mesma aplicação,
 cada um com sua própria página e agenda) onde o horário só é confirmado

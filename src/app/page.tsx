@@ -7,6 +7,9 @@ export default function HomePage() {
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-600">
         <Sparkles className="h-6 w-6" />
       </span>
+      <p className="text-sm font-semibold uppercase tracking-wide text-rose-500">
+        Unha Marcada
+      </p>
       <h1 className="text-3xl font-semibold text-neutral-900 sm:text-4xl">
         Plataforma de agendamento para manicures e pedicures
       </h1>

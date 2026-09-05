@@ -42,7 +42,7 @@ export default async function TenantLandingPage({
     .filter((group) => group.items.length > 0);
 
   return (
-    <main className="flex min-h-screen flex-col bg-gradient-to-b from-rose-50 via-white to-white">
+    <main className="flex flex-col bg-gradient-to-b from-rose-50 via-white to-white">
       <header className="mx-auto flex w-full max-w-3xl flex-col items-center gap-4 px-6 pt-16 pb-10 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-2xl font-semibold text-rose-600 shadow-sm">
           {tenant.name.charAt(0).toUpperCase()}

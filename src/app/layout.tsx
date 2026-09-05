@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Agendamento Online — Manicure e Pedicure",
+  title: "Unha Marcada — Agendamento de Manicure e Pedicure",
   description: "Agende seu horário de manicure e pedicure com pagamento de sinal via PIX.",
 };
 
