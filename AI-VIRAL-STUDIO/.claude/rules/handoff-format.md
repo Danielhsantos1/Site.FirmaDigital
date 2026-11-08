@@ -18,3 +18,9 @@ Cada projeto vive em `projects/<slug>/` (slug em minúsculas, hífens). Arquivos
 | `STATUS.md` | executive-creative-director | `templates/project-status.md` |
 
 Cada arquivo começa com o cabeçalho do template (projeto, versão, autor-agente, data, entradas usadas, status). Só o dono edita seu arquivo; mudanças pedidas por outros passam pelo ECD.
+
+## Rastreabilidade obrigatória (a partir da Missão 03)
+Todo entregável numerado termina com a seção `## Rastreabilidade`, contendo exatamente estas linhas: `Fontes:`, `Fatos confirmados:`, `Hipóteses:`, `Pendências:` e `Responsável:`. Fato sem fonte vai para Hipóteses ou Pendências, nunca para Fatos confirmados.
+
+## Versões e revisões
+O arquivo original (v1) não é sobrescrito após revisão do Quality Reviewer. A correção é gravada como `<nome>.v2.md` (depois `.v3.md`), com cabeçalho `substitui: <arquivo anterior>` e resumo das mudanças. O `STATUS.md` indica a versão vigente. Arquivos em pastas iniciadas por `_` (`_sources`, `_qa-test`, `_execution`) não são entregáveis.

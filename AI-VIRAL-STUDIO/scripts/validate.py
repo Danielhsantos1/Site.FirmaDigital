@@ -113,6 +113,20 @@ for p in ROOT.rglob("*"):
         if re.search(r"(sk-[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,})", p.read_text(encoding="utf-8", errors="ignore")):
             err(f"possível segredo em {p.relative_to(ROOT)}")
 
+LEGACY = {"00-brief.md", "00-client-audit.md"}
+for proj in sorted((ROOT / "projects").glob("*/")):
+    if proj.name.startswith("_") or not proj.is_dir(): continue
+    for f in sorted(proj.glob("[0-9][0-9]-*.md")):
+        if f.name in LEGACY: continue
+        tx = f.read_text(encoding="utf-8")
+        if not tx.startswith("---\n"): err(f"{f.relative_to(ROOT)}: sem cabeçalho de projeto")
+        if "## Rastreabilidade" not in tx: err(f"{f.relative_to(ROOT)}: sem seção Rastreabilidade"); continue
+        for lab in ("Fontes:", "Fatos confirmados:", "Hipóteses:", "Pendências:", "Responsável:"):
+            if lab not in tx.split("## Rastreabilidade")[-1]: err(f"{f.relative_to(ROOT)}: Rastreabilidade sem '{lab}'")
+    for f in proj.rglob("*"):
+        if f.is_file() and f.suffix in (".md", ".jsonl", ".txt") and re.search(r"\(?\d{2}\)?\s?9\d{4}-?\d{4}|[\w.]+@gmail\.com", f.read_text(encoding="utf-8", errors="ignore")):
+            err(f"{f.relative_to(ROOT)}: contato pessoal (telefone/e-mail) no projeto")
+
 print(f"agentes: {len(found)}/11 · skills: {len(skills_dirs)} · templates: {len(list((ROOT/'templates').glob('*.md')))-1}")
 for w in warns: print("AVISO:", w)
 for e in errors: print("ERRO:", e)

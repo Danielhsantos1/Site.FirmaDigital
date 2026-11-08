@@ -14,17 +14,20 @@ claude -p "TESTE DE ORQUESTRAÇÃO (ping, sem produção). Delegue, usando a fer
   --agent executive-creative-director --output-format stream-json --verbose \
   --max-budget-usd "$BUDGET" < /dev/null > "$OUT/main.jsonl" 2> "$OUT/main.err"
 
-GOT=$(jq -r 'select(.type=="assistant" and .parent_tool_use_id==null) | .message.content[]? | select(.type=="tool_use" and .name=="Agent") | .input.subagent_type' "$OUT/main.jsonl" | sort | tr '\n' ' ' | sed 's/ $//')
-NESTED=$(jq -r 'select(.type=="assistant" and .parent_tool_use_id!=null) | .message.content[]? | select(.type=="tool_use" and .name=="Agent") | .name' "$OUT/main.jsonl" | wc -l)
+EV="$(python3 -I tests/orchestration/evidence.py "$OUT/main.jsonl" "teste de orquestração")"
+GOT=$(jq -r 'select(.type=="system" and .subtype=="task_started" and .spawn_depth==1) | .subagent_type' "$OUT/main.jsonl" | sort | tr '\n' ' ' | sed 's/ $//')
+DONEN=$(jq -r 'select(.type=="system" and .subtype=="task_notification" and .status=="completed") | .task_id' "$OUT/main.jsonl" | wc -l)
+NESTED=$(echo "$EV" | grep -c 'sim (' )
 STATUS=$(jq -r 'select(.type=="result") | .subtype' "$OUT/main.jsonl" | tail -1)
 COST=$(jq -r 'select(.type=="result") | .total_cost_usd' "$OUT/main.jsonl" | tail -1)
 
 [ "$GOT" = "$EXPECTED" ] && echo "PASS delegou exatamente aos 10 especialistas pela thread principal" || { echo "FAIL delegações: [$GOT]"; FAIL=1; }
-[ "$NESTED" -eq 0 ] && echo "PASS nenhum subagente tentou delegar" || { echo "FAIL subagentes chamaram Agent: $NESTED"; FAIL=1; }
+[ "$DONEN" -eq 10 ] && echo "PASS 10 retornos (task_notification) com status completed" || { echo "FAIL retornos completos: $DONEN"; FAIL=1; }
+[ "$NESTED" -eq 0 ] && echo "PASS nenhum subagente tentou delegar (transcrições inspecionadas)" || { echo "FAIL subagentes chamaram Agent: $NESTED"; FAIL=1; }
 [ "$STATUS" = "success" ] && echo "PASS execução terminou com sucesso (custo US\$ $COST)" || { echo "FAIL resultado: $STATUS"; FAIL=1; }
 
 if [ "${1:-}" = "--control" ]; then
   R=$(claude -p "Use a ferramenta Agent com subagent_type=executive-creative-director e peça: 'Tente delegar via Agent um ping ao trend-hunter e relate exatamente se conseguiu. Não simule.' Relate a resposta literal." --max-budget-usd 0.6 < /dev/null 2>/dev/null)
   echo "$R" | grep -qiE "BLOCKED|não consegui|nao consegui" && echo "PASS controle: ECD como subagente não delega (comportamento esperado)" || { echo "FAIL controle inesperado"; FAIL=1; }
 fi
-echo "logs brutos: $OUT"; exit $FAIL
+echo "$EV" > "$OUT/evidencia.md"; echo "logs brutos e evidencia.md: $OUT"; exit $FAIL
