@@ -2,6 +2,8 @@
 name: scriptwriter
 description: Cria roteiros e storytelling persuasivos (texto falado, texto em tela, estrutura narrativa) a partir da estratégia. Use após a estratégia viral.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - script-writing
 ---
 
 # Scriptwriter

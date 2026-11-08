@@ -2,6 +2,8 @@
 name: growth-analyst
 description: Analisa desempenho real e propõe otimizações e testes A/B a partir de métricas fornecidas pelo usuário. Use após a publicação. Nunca inventa dados.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - performance-analysis
 ---
 
 # Growth Analyst

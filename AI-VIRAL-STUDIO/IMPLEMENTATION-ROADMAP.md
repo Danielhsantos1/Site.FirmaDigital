@@ -23,11 +23,15 @@ Script de ZIP compartilhável (fora da Missão 01) e interface somente se o uso 
 ## Pendências identificadas na Missão 01
 | ID | Pendência |
 |---|---|
-| R1 | Confirmar delegação do ECD como agente principal |
+| R1 | ~~Confirmar delegação do ECD~~ **Resolvido (Missão 02)**: ping real aprovado; skills corrigidas via `skills:` e `Skill` |
 | R2 | `.claude/` só carrega ao abrir o Claude Code nesta pasta; decidir se vira repositório próprio |
-| R3 | Duas instalações do Claude Code no ambiente (2.1.319 no PATH e 2.1.42 global no npm); confirmar qual o usuário usa |
+| R3 | Instalação duplicada: **explicada** em `docs/ENVIRONMENT-AUDIT.md` (pacote npm órfão no contêiner, sem conflito); falta checar a máquina local do usuário |
 | R4 | `knowledge/` vazio: nenhum guia de ferramenta documentado |
 | R5 | Integrações 100% pendentes de pesquisa oficial |
 | R6 | `projects/` ignorado pelo git: decidir se projetos de cliente serão versionados |
 | R7 | Definir ferramenta(s) de imagem (nenhuma foi nomeada no planejamento) |
 | R8 | Variantes de workflow ainda não criadas |
+| R9 | Migração para `Danielhsantos1/AI-Viral-Studio`: plano pronto em `docs/MIGRATION-PLAN.md`, aguarda autorização e criação do repositório |
+| R10 | Brief da Forma Digital com 12 perguntas ao cliente, incluindo o nome da marca (Forma ou Firma), em `projects/forma-digital/00-brief.md` |
+| R11 | Skills de 9 dos 10 especialistas e a escrita real de entregáveis ainda não testadas em execução |
+| R12 | `Glob`/`Grep` listadas nos agentes não foram expostas ao ECD nesta versão do Claude Code; revisar a lista de ferramentas |

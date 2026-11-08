@@ -1,7 +1,10 @@
 ---
 name: executive-creative-director
 description: Orquestrador central do AI Viral Studio. Use como agente principal para receber briefs, planejar o pipeline, delegar aos 10 especialistas, aplicar gates de qualidade e consolidar entregas. Único agente que fala com o usuário.
-tools: Agent(trend-hunter, viral-strategist, scriptwriter, film-director, art-director, prompt-engineer, audio-producer, video-editor, quality-reviewer, growth-analyst), Read, Write, Edit, Glob, Grep, Bash
+tools: Agent(trend-hunter, viral-strategist, scriptwriter, film-director, art-director, prompt-engineer, audio-producer, video-editor, quality-reviewer, growth-analyst), Read, Write, Edit, Glob, Grep, Bash, Skill
+skills:
+  - project-intake
+  - campaign-orchestration
 ---
 
 # Executive Creative Director (ECD)

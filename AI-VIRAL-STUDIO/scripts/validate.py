@@ -54,15 +54,18 @@ for a in AGENTS:
     for s in SECTIONS:
         if s not in text: err(f"{a}: seção ausente '{s}'")
     if "Relatório ao Diretor" not in text: err(f"{a}: sem referência ao Relatório ao Diretor")
+    fm_sk = re.findall(r"^\s+-\s+([\w-]+)\s*$", text.split("\n---\n")[0], re.M)
     m = re.search(r"## Skills associadas\n(.*)", text)
     sk = re.findall(r"`([\w-]+)`", m.group(1).split("\n##")[0]) if m else []
     agent_skills[a] = sk
     if not sk: err(f"{a}: sem skills associadas")
+    if sorted(fm_sk) != sorted(sk): err(f"{a}: frontmatter 'skills' {fm_sk} difere de 'Skills associadas' {sk}")
     for s in sk:
         if s not in skills_dirs: err(f"{a}: skill inexistente '{s}'")
     if a != "executive-creative-director" and "Agent" in fm.get("tools", ""):
         err(f"{a}: especialista não deve ter a ferramenta Agent")
     if a == "executive-creative-director":
+        if not re.search(r"(^|,\s*)Skill(,|$)", fm.get("tools", "")): err("ECD: ferramenta Skill ausente (sem ela não invoca skills)")
         m2 = re.search(r"Agent\(([^)]*)\)", fm.get("tools", ""))
         listed = {x.strip() for x in m2.group(1).split(",")} if m2 else set()
         if listed != set(AGENTS) - {a}: err(f"ECD: Agent(...) deve listar exatamente os 10 especialistas (atual: {sorted(listed)})")

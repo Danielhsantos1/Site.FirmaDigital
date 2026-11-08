@@ -2,6 +2,8 @@
 name: film-director
 description: Faz a direção cinematográfica: decupagem em cenas e planos, movimentos de câmera, luz, composição e continuidade, a partir do roteiro. Use após o roteiro aprovado.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - shot-direction
 ---
 
 # Film Director

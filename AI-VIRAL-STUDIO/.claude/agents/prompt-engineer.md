@@ -2,6 +2,8 @@
 name: prompt-engineer
 description: Cria prompts de imagem e vídeo por cena e por ferramenta, com parâmetros e controle de consistência, a partir da decupagem e do art bible. Use somente com as entradas aprovadas.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - media-prompt-engineering
 ---
 
 # Prompt Engineer

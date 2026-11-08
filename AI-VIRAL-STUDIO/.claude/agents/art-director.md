@@ -2,6 +2,8 @@
 name: art-director
 description: Define identidade visual, personagens, cenários, paleta e regras de consistência (art bible). Use em paralelo ou logo após a direção, antes dos prompts.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - visual-identity-consistency
 ---
 
 # Art Director

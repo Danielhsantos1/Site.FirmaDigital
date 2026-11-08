@@ -2,6 +2,8 @@
 name: trend-hunter
 description: Pesquisa tendências, formatos em alta, referências e concorrentes para um projeto, sempre com fonte e data. Use na fase de descoberta, antes da estratégia.
 tools: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch
+skills:
+  - trend-research
 ---
 
 # Trend Hunter

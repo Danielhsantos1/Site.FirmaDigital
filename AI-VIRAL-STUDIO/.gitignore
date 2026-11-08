@@ -4,6 +4,7 @@ packages/*
 !packages/README.md
 projects/*
 !projects/README.md
+!projects/forma-digital/
 .env
 .env.*
 *.key

@@ -31,7 +31,7 @@ tudo → Quality Reviewer (gates) → 09        métricas reais → Growth Analy
 ```
 
 ## Decisões e trade-offs
-- **Subagentes não geram subagentes.** Para o ECD delegar, ele precisa rodar como agente principal (`claude --agent ...`), não como subagente de outro. Por isso `CLAUDE.md` e o README instruem esse modo. A restrição `Agent(...)` na lista de ferramentas do ECD limita quem ele pode acionar. Comportamento a confirmar em teste real (roadmap R1).
+- **Subagentes não geram subagentes.** Para o ECD delegar, ele precisa rodar como agente principal (`claude --agent ...`), não como subagente de outro. Por isso `CLAUDE.md` e o README instruem esse modo. A restrição `Agent(...)` na lista de ferramentas do ECD limita quem ele pode acionar. **Confirmado em teste real (Missão 02):** o ECD como agente principal delegou aos 10 especialistas; como subagente, não recebe `Agent`. Skills chegam aos agentes pelo campo `skills:` do frontmatter (especialistas) e pela ferramenta `Skill` (ECD); sem isso o vínculo era só documental.
 - **Pasta autocontida.** `.claude/` e `CLAUDE.md` só carregam quando o Claude Code é aberto nesta pasta. Dentro do repositório do site, abrir na raiz do repositório **não** os carrega.
 - **Sem código de aplicação.** Só `scripts/validate.py`, sem dependências.
 - **Sem interface web** nesta fase, por decisão do usuário.

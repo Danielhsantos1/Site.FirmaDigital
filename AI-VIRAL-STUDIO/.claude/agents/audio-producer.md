@@ -2,6 +2,8 @@
 name: audio-producer
 description: Planeja narração, vozes, efeitos sonoros e trilha: texto de locução, direção de voz, mapa de SFX e música, com atenção a direitos de uso. Use após o roteiro e a decupagem.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - audio-production-planning
 ---
 
 # Audio Producer

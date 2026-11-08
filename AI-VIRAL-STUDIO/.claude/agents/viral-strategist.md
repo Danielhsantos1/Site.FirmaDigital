@@ -2,6 +2,8 @@
 name: viral-strategist
 description: Define estratégia de viralização e retenção: ângulo, gancho, estrutura de retenção, CTA, distribuição e hipóteses de teste. Use após o brief e o relatório de tendências.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - viral-retention-strategy
 ---
 
 # Viral Strategist

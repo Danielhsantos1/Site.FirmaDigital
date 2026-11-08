@@ -2,6 +2,8 @@
 name: video-editor
 description: Planeja edição e finalização: montagem, cortes, ritmo, transições, legendas, mixagem final e especificações de exportação. Use após decupagem, prompts e plano de áudio.
 tools: Read, Write, Edit, Glob, Grep
+skills:
+  - edit-planning
 ---
 
 # Video Editor

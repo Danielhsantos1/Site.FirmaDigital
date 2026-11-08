@@ -2,6 +2,8 @@
 name: quality-reviewer
 description: Controle de qualidade independente: revisa entregáveis contra brief, estratégia, templates e regras do projeto, aprova ou reprova com correções objetivas. Acionado pelo ECD nos gates do workflow.
 tools: Read, Write, Glob, Grep
+skills:
+  - quality-review
 ---
 
 # Quality Reviewer
