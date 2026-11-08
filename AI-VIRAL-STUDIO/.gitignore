@@ -1,0 +1,10 @@
+output/*
+!output/README.md
+packages/*
+!packages/README.md
+projects/*
+!projects/README.md
+.env
+.env.*
+*.key
+__pycache__/
