@@ -21,7 +21,7 @@ def transcript_ops(output_file):
     ops = []
     try: real = os.path.realpath(output_file)
     except Exception: return None
-    if not os.path.exists(real): return None
+    if not os.path.isfile(real): return None
     for line in open(real, encoding="utf-8", errors="ignore"):
         try: e = json.loads(line)
         except Exception: continue
