@@ -124,7 +124,7 @@ for proj in sorted((ROOT / "projects").glob("*/")):
         for lab in ("Fontes:", "Fatos confirmados:", "Hipóteses:", "Pendências:", "Responsável:"):
             if lab not in tx.split("## Rastreabilidade")[-1]: err(f"{f.relative_to(ROOT)}: Rastreabilidade sem '{lab}'")
     for f in proj.rglob("*"):
-        if f.is_file() and f.suffix in (".md", ".jsonl", ".txt") and re.search(r"\(?\d{2}\)?\s?9\d{4}-?\d{4}|[\w.]+@gmail\.com", f.read_text(encoding="utf-8", errors="ignore")):
+        if f.is_file() and f.suffix in (".md", ".jsonl", ".txt") and re.search(r"\(\d{2}\)\s?9?\d{4}-\d{4}|\b9\d{4}-\d{4}\b|[\w.]+@gmail\.com", f.read_text(encoding="utf-8", errors="ignore")):
             err(f"{f.relative_to(ROOT)}: contato pessoal (telefone/e-mail) no projeto")
 
 print(f"agentes: {len(found)}/11 · skills: {len(skills_dirs)} · templates: {len(list((ROOT/'templates').glob('*.md')))-1}")
