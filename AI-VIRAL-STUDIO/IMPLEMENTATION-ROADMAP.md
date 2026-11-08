@@ -33,5 +33,8 @@ Script de ZIP compartilhável (fora da Missão 01) e interface somente se o uso 
 | R8 | Variantes de workflow ainda não criadas |
 | R9 | Migração para `Danielhsantos1/AI-Viral-Studio`: plano pronto em `docs/MIGRATION-PLAN.md`, aguarda autorização e criação do repositório |
 | R10 | Brief da Forma Digital com 12 perguntas ao cliente, incluindo o nome da marca (Forma ou Firma), em `projects/forma-digital/00-brief.md` |
-| R11 | Skills de 9 dos 10 especialistas e a escrita real de entregáveis ainda não testadas em execução |
+| R11 | ~~Escrita real de entregáveis~~ validada (Missão 03). Skills dos agentes: carregamento provado em 2; uso nos demais é autorrelato |
+| R13 | Delegação longa: o Quality Reviewer foi encerrado após 724 s (limite provável de ~12 min); dividir revisões em lotes |
+| R14 | Limite de uso do plano (HTTP 429) interrompeu uma execução; planejar execuções menores |
+| R15 | 03-script.v2: reconfirmar 04, 06, 07, 08 e fazer v3 (ver `docs/MISSION-03-REPORT.md`) |
 | R12 | `Glob`/`Grep` listadas nos agentes não foram expostas ao ECD nesta versão do Claude Code; revisar a lista de ferramentas |
